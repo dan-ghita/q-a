@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(app) {
-    var questions = require('../../app/controllers/questions.server.controller');
+    var questions = require('../controllers/questions.server.controller');
 
     app.route('/questions')
         .get(questions.list)

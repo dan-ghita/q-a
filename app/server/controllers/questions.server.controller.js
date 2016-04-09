@@ -4,97 +4,91 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    errorHandler = require('./errors.server.controller'),
+    errorHandler = require('./errors.server.controller.js'),
     Question = mongoose.model('Question'),
-    Answer = mongoose.model('Answer'),
     _ = require('lodash');
 
 /**
- * Create a Answer
+ * Create a Question
  */
 exports.create = function(req, res) {
-    var answer = new Answer(req.body);
-    answer.user = req.user;
+    var question = new Question(req.body);
 
-    answer.save(function(err) {
+    question.save(function(err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.status(201).json(answer);
+            res.status(201).json(question);
         }
     });
-
-    Question.findById(req.body.question_id, function (err, question) {
-        question.answers.push(answer);
-        question.save();
-    });
-};
-
-/**answer
- * Show the current Answer
- */
-exports.read = function(req, res) {
-    var answer = req.answer ? req.answer.toJSON() : {};
-    res.json(answer);
 };
 
 /**
- * Update a Answer
+ * Show the current Question
+ */
+exports.read = function(req, res) {
+    var question = req.question ? req.question.toJSON() : {};
+    res.json(question);
+};
+
+/**
+ * Update a Question
  */
 exports.update = function(req, res) {
 
 };
 
 /**
- * Delete an Answer
+ * Delete an Question
  */
 exports.delete = function(req, res) {
-    var answer = req.answer;
+    var question = req.question;
 
-    answer.remove(function (err) {
+    question.remove(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.json(answer);
+            res.json(question);
         }
     });
 };
 
 /**
- * List of Answers
+ * List of Questions
  */
 exports.list = function(req, res) {
-    Answer.find().sort('-created_at').exec(function(err, answers) {
+    Question.find().exec(function(err, questions) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.json(answers);
+            res.json(questions);
         }
     });
 };
 
-exports.answersByID = function (req, res, next, id) {
+
+exports.questionsByID = function (req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).send({
-            message: 'Answer is invalid'
+            message: 'Question is invalid'
         });
     }
 
-    Answer.findById(id).exec(function (err, answer) {
+    Question.findById(id).exec(function (err, question) {
         if (err) {
             return next(err);
-        } else if (!answer) {
+        } else if (!question) {
             return res.status(404).send({
-                message: 'No answer with that identifier has been found'
+                message: 'No question with that identifier has been found'
             });
         }
-        req.answer = answer;
+        req.question = question;
         next();
     });
 };
